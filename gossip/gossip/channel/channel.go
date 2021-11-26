@@ -9,6 +9,7 @@ package channel
 import (
 	"bytes"
 	"fmt"
+	"github.com/hyperledger/fabric/gossip/comm"
 	"reflect"
 	"strconv"
 	"sync"
@@ -18,7 +19,6 @@ import (
 	proto "github.com/hyperledger/fabric-protos-go/gossip"
 	common_utils "github.com/hyperledger/fabric/common/util"
 	"github.com/hyperledger/fabric/gossip/api"
-	"github.com/hyperledger/fabric/gossip/comm"
 	"github.com/hyperledger/fabric/gossip/common"
 	"github.com/hyperledger/fabric/gossip/discovery"
 	"github.com/hyperledger/fabric/gossip/election"

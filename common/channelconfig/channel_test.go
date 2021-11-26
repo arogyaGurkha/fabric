@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"testing"
 
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	cb "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/bccsp/sw"
 	"github.com/hyperledger/fabric/common/util"

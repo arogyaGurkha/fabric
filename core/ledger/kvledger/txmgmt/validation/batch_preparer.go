@@ -9,7 +9,7 @@ package validation
 import (
 	"bytes"
 
-	"github.com/hyperledger/fabric-protos-go/common"
+	"github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/ledger/rwset"
 	"github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/flogging"

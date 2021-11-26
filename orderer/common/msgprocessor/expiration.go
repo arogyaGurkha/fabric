@@ -7,9 +7,10 @@ SPDX-License-Identifier: Apache-2.0
 package msgprocessor
 
 import (
+	cb "github.com/arogyaGurkha/fabric-protos-go/common"
 	"time"
 
-	"github.com/hyperledger/fabric-protos-go/common"
+	"github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/common/channelconfig"
 	"github.com/hyperledger/fabric/common/crypto"
 	"github.com/hyperledger/fabric/protoutil"
@@ -41,7 +42,7 @@ func (exp *expirationRejectRule) Apply(message *common.Envelope) error {
 	if !ordererConf.Capabilities().ExpirationCheck() {
 		return nil
 	}
-	signedData, err := protoutil.EnvelopeAsSignedData(message)
+	signedData, err := protoutil.EnvelopeAsSignedData((*cb.Envelope)(message))
 
 	if err != nil {
 		return errors.Errorf("could not convert message to signedData: %s", err)

@@ -8,7 +8,7 @@ package chaincode
 
 import (
 	"github.com/golang/protobuf/proto"
-	common2 "github.com/hyperledger/fabric-protos-go/common"
+	common2 "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/common/chaincode"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/common/policies"
