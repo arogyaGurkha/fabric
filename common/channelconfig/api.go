@@ -9,7 +9,7 @@ package channelconfig
 import (
 	"time"
 
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	cb "github.com/arogyaGurkha/fabric-protos-go/common"
 	ab "github.com/hyperledger/fabric-protos-go/orderer"
 	pb "github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/configtx"

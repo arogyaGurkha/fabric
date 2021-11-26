@@ -9,8 +9,10 @@ package configtx
 import (
 	"regexp"
 
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
-	cb "github.com/hyperledger/fabric-protos-go/common"
+
+	//cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/common/policies"
 	"github.com/hyperledger/fabric/protoutil"
@@ -35,7 +37,7 @@ type ValidatorImpl struct {
 	channelID   string
 	sequence    uint64
 	configMap   map[string]comparable
-	configProto *cb.Config
+	configProto *gurkhaB.Config
 	namespace   string
 	pm          policies.Manager
 }
@@ -100,7 +102,7 @@ func ValidateChannelID(channelID string) error {
 }
 
 // NewValidatorImpl constructs a new implementation of the Validator interface.
-func NewValidatorImpl(channelID string, config *cb.Config, namespace string, pm policies.Manager) (*ValidatorImpl, error) {
+func NewValidatorImpl(channelID string, config *gurkhaB.Config, namespace string, pm policies.Manager) (*ValidatorImpl, error) {
 	if config == nil {
 		return nil, errors.Errorf("nil config parameter")
 	}
@@ -130,11 +132,11 @@ func NewValidatorImpl(channelID string, config *cb.Config, namespace string, pm 
 
 // ProposeConfigUpdate takes in an Envelope of type CONFIG_UPDATE and produces a
 // ConfigEnvelope to be used as the Envelope Payload Data of a CONFIG message
-func (vi *ValidatorImpl) ProposeConfigUpdate(configtx *cb.Envelope) (*cb.ConfigEnvelope, error) {
+func (vi *ValidatorImpl) ProposeConfigUpdate(configtx *gurkhaB.Envelope) (*gurkhaB.ConfigEnvelope, error) {
 	return vi.proposeConfigUpdate(configtx)
 }
 
-func (vi *ValidatorImpl) proposeConfigUpdate(configtx *cb.Envelope) (*cb.ConfigEnvelope, error) {
+func (vi *ValidatorImpl) proposeConfigUpdate(configtx *gurkhaB.Envelope) (*gurkhaB.ConfigEnvelope, error) {
 	configUpdateEnv, err := protoutil.EnvelopeToConfigUpdate(configtx)
 	if err != nil {
 		return nil, errors.Errorf("error converting envelope to config update: %s", err)
@@ -150,8 +152,8 @@ func (vi *ValidatorImpl) proposeConfigUpdate(configtx *cb.Envelope) (*cb.ConfigE
 		return nil, errors.Errorf("could not turn configMap back to channelGroup: %s", err)
 	}
 
-	return &cb.ConfigEnvelope{
-		Config: &cb.Config{
+	return &gurkhaB.ConfigEnvelope{
+		Config: &gurkhaB.Config{
 			Sequence:     vi.sequence + 1,
 			ChannelGroup: channelGroup,
 		},
@@ -160,7 +162,7 @@ func (vi *ValidatorImpl) proposeConfigUpdate(configtx *cb.Envelope) (*cb.ConfigE
 }
 
 // Validate simulates applying a ConfigEnvelope to become the new config
-func (vi *ValidatorImpl) Validate(configEnv *cb.ConfigEnvelope) error {
+func (vi *ValidatorImpl) Validate(configEnv *gurkhaB.ConfigEnvelope) error {
 	if configEnv == nil {
 		return errors.Errorf("config envelope is nil")
 	}
@@ -207,6 +209,6 @@ func (vi *ValidatorImpl) Sequence() uint64 {
 }
 
 // ConfigProto returns the config proto which initialized this Validator
-func (vi *ValidatorImpl) ConfigProto() *cb.Config {
+func (vi *ValidatorImpl) ConfigProto() *gurkhaB.Config {
 	return vi.configProto
 }

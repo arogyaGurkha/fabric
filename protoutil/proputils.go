@@ -11,22 +11,22 @@ import (
 	"encoding/hex"
 	"time"
 
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/pkg/errors"
 )
 
 // CreateChaincodeProposal creates a proposal from given input.
 // It returns the proposal and the transaction id associated to the proposal
-func CreateChaincodeProposal(typ common.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte) (*peer.Proposal, string, error) {
+func CreateChaincodeProposal(typ gurkhaB.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte) (*peer.Proposal, string, error) {
 	return CreateChaincodeProposalWithTransient(typ, channelID, cis, creator, nil)
 }
 
 // CreateChaincodeProposalWithTransient creates a proposal from given input
 // It returns the proposal and the transaction id associated to the proposal
-func CreateChaincodeProposalWithTransient(typ common.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte, transientMap map[string][]byte) (*peer.Proposal, string, error) {
+func CreateChaincodeProposalWithTransient(typ gurkhaB.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte, transientMap map[string][]byte) (*peer.Proposal, string, error) {
 	// generate a random nonce
 	nonce, err := getRandomNonce()
 	if err != nil {
@@ -42,7 +42,7 @@ func CreateChaincodeProposalWithTransient(typ common.HeaderType, channelID strin
 // CreateChaincodeProposalWithTxIDAndTransient creates a proposal from given
 // input. It returns the proposal and the transaction id associated with the
 // proposal
-func CreateChaincodeProposalWithTxIDAndTransient(typ common.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte, txid string, transientMap map[string][]byte) (*peer.Proposal, string, error) {
+func CreateChaincodeProposalWithTxIDAndTransient(typ gurkhaB.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte, txid string, transientMap map[string][]byte) (*peer.Proposal, string, error) {
 	// generate a random nonce
 	nonce, err := getRandomNonce()
 	if err != nil {
@@ -59,7 +59,7 @@ func CreateChaincodeProposalWithTxIDAndTransient(typ common.HeaderType, channelI
 
 // CreateChaincodeProposalWithTxIDNonceAndTransient creates a proposal from
 // given input
-func CreateChaincodeProposalWithTxIDNonceAndTransient(txid string, typ common.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, nonce, creator []byte, transientMap map[string][]byte) (*peer.Proposal, string, error) {
+func CreateChaincodeProposalWithTxIDNonceAndTransient(txid string, typ gurkhaB.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, nonce, creator []byte, transientMap map[string][]byte) (*peer.Proposal, string, error) {
 	ccHdrExt := &peer.ChaincodeHeaderExtension{ChaincodeId: cis.ChaincodeSpec.ChaincodeId}
 	ccHdrExtBytes, err := proto.Marshal(ccHdrExt)
 	if err != nil {
@@ -86,9 +86,9 @@ func CreateChaincodeProposalWithTxIDNonceAndTransient(txid string, typ common.He
 		return nil, "", errors.Wrap(err, "error validating Timestamp")
 	}
 
-	hdr := &common.Header{
+	hdr := &gurkhaB.Header{
 		ChannelHeader: MarshalOrPanic(
-			&common.ChannelHeader{
+			&gurkhaB.ChannelHeader{
 				Type:      int32(typ),
 				TxId:      txid,
 				Timestamp: timestamp,
@@ -98,7 +98,7 @@ func CreateChaincodeProposalWithTxIDNonceAndTransient(txid string, typ common.He
 			},
 		),
 		SignatureHeader: MarshalOrPanic(
-			&common.SignatureHeader{
+			&gurkhaB.SignatureHeader{
 				Nonce:   nonce,
 				Creator: creator,
 			},
@@ -169,13 +169,13 @@ func GetBytesProposalResponse(pr *peer.ProposalResponse) ([]byte, error) {
 }
 
 // GetBytesHeader get the bytes of Header from the message
-func GetBytesHeader(hdr *common.Header) ([]byte, error) {
+func GetBytesHeader(hdr *gurkhaB.Header) ([]byte, error) {
 	bytes, err := proto.Marshal(hdr)
 	return bytes, errors.Wrap(err, "error marshaling Header")
 }
 
 // GetBytesSignatureHeader get the bytes of SignatureHeader from the message
-func GetBytesSignatureHeader(hdr *common.SignatureHeader) ([]byte, error) {
+func GetBytesSignatureHeader(hdr *gurkhaB.SignatureHeader) ([]byte, error) {
 	bytes, err := proto.Marshal(hdr)
 	return bytes, errors.Wrap(err, "error marshaling SignatureHeader")
 }
@@ -187,13 +187,13 @@ func GetBytesTransaction(tx *peer.Transaction) ([]byte, error) {
 }
 
 // GetBytesPayload get the bytes of Payload from the message
-func GetBytesPayload(payl *common.Payload) ([]byte, error) {
+func GetBytesPayload(payl *gurkhaB.Payload) ([]byte, error) {
 	bytes, err := proto.Marshal(payl)
 	return bytes, errors.Wrap(err, "error marshaling Payload")
 }
 
 // GetBytesEnvelope get the bytes of Envelope from the message
-func GetBytesEnvelope(env *common.Envelope) ([]byte, error) {
+func GetBytesEnvelope(env *gurkhaB.Envelope) ([]byte, error) {
 	bytes, err := proto.Marshal(env)
 	return bytes, errors.Wrap(err, "error marshaling Envelope")
 }
@@ -209,7 +209,7 @@ func GetActionFromEnvelope(envBytes []byte) (*peer.ChaincodeAction, error) {
 	return GetActionFromEnvelopeMsg(env)
 }
 
-func GetActionFromEnvelopeMsg(env *common.Envelope) (*peer.ChaincodeAction, error) {
+func GetActionFromEnvelopeMsg(env *gurkhaB.Envelope) (*peer.ChaincodeAction, error) {
 	payl, err := UnmarshalPayload(env.Payload)
 	if err != nil {
 		return nil, err
@@ -230,7 +230,7 @@ func GetActionFromEnvelopeMsg(env *common.Envelope) (*peer.ChaincodeAction, erro
 
 // CreateProposalFromCISAndTxid returns a proposal given a serialized identity
 // and a ChaincodeInvocationSpec
-func CreateProposalFromCISAndTxid(txid string, typ common.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte) (*peer.Proposal, string, error) {
+func CreateProposalFromCISAndTxid(txid string, typ gurkhaB.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte) (*peer.Proposal, string, error) {
 	nonce, err := getRandomNonce()
 	if err != nil {
 		return nil, "", err
@@ -240,7 +240,7 @@ func CreateProposalFromCISAndTxid(txid string, typ common.HeaderType, channelID 
 
 // CreateProposalFromCIS returns a proposal given a serialized identity and a
 // ChaincodeInvocationSpec
-func CreateProposalFromCIS(typ common.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte) (*peer.Proposal, string, error) {
+func CreateProposalFromCIS(typ gurkhaB.HeaderType, channelID string, cis *peer.ChaincodeInvocationSpec, creator []byte) (*peer.Proposal, string, error) {
 	return CreateChaincodeProposal(typ, channelID, cis, creator)
 }
 
@@ -255,7 +255,7 @@ func CreateGetChaincodesProposal(channelID string, creator []byte) (*peer.Propos
 			Input:       ccinp,
 		},
 	}
-	return CreateProposalFromCIS(common.HeaderType_ENDORSER_TRANSACTION, channelID, lsccSpec, creator)
+	return CreateProposalFromCIS(gurkhaB.HeaderType_ENDORSER_TRANSACTION, channelID, lsccSpec, creator)
 }
 
 // CreateGetInstalledChaincodesProposal returns a GETINSTALLEDCHAINCODES
@@ -269,7 +269,7 @@ func CreateGetInstalledChaincodesProposal(creator []byte) (*peer.Proposal, strin
 			Input:       ccinp,
 		},
 	}
-	return CreateProposalFromCIS(common.HeaderType_ENDORSER_TRANSACTION, "", lsccSpec, creator)
+	return CreateProposalFromCIS(gurkhaB.HeaderType_ENDORSER_TRANSACTION, "", lsccSpec, creator)
 }
 
 // CreateInstallProposalFromCDS returns a install proposal given a serialized
@@ -349,7 +349,7 @@ func createProposalFromCDS(channelID string, msg proto.Message, creator []byte, 
 	}
 
 	// ...and get the proposal for it
-	return CreateProposalFromCIS(common.HeaderType_ENDORSER_TRANSACTION, channelID, lsccSpec, creator)
+	return CreateProposalFromCIS(gurkhaB.HeaderType_ENDORSER_TRANSACTION, channelID, lsccSpec, creator)
 }
 
 // ComputeTxID computes TxID as the Hash computed

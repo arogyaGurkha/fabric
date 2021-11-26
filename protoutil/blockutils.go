@@ -12,25 +12,26 @@ import (
 	"encoding/asn1"
 	"math/big"
 
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
-	cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/pkg/errors"
 )
 
 // NewBlock constructs a block with no data and no metadata.
-func NewBlock(seqNum uint64, previousHash []byte) *cb.Block {
-	block := &cb.Block{}
-	block.Header = &cb.BlockHeader{}
+func NewBlock(seqNum uint64, previousHash []byte) *gurkhaB.Block {
+	block := &gurkhaB.Block{}
+	block.Header = &gurkhaB.BlockHeader{}
 	block.Header.Number = seqNum
 	block.Header.PreviousHash = previousHash
 	block.Header.DataHash = []byte{}
-	block.Data = &cb.BlockData{}
+	block.Data = &gurkhaB.BlockData{}
+	block.Extension = &gurkhaB.BlockExtension{}
 
 	var metadataContents [][]byte
-	for i := 0; i < len(cb.BlockMetadataIndex_name); i++ {
+	for i := 0; i < len(gurkhaB.BlockMetadataIndex_name); i++ {
 		metadataContents = append(metadataContents, []byte{})
 	}
-	block.Metadata = &cb.BlockMetadata{Metadata: metadataContents}
+	block.Metadata = &gurkhaB.BlockMetadata{Metadata: metadataContents}
 
 	return block
 }
@@ -41,7 +42,7 @@ type asn1Header struct {
 	DataHash     []byte
 }
 
-func BlockHeaderBytes(b *cb.BlockHeader) []byte {
+func BlockHeaderBytes(b *gurkhaB.BlockHeader) []byte {
 	asn1Header := asn1Header{
 		PreviousHash: b.PreviousHash,
 		DataHash:     b.DataHash,
@@ -57,12 +58,12 @@ func BlockHeaderBytes(b *cb.BlockHeader) []byte {
 	return result
 }
 
-func BlockHeaderHash(b *cb.BlockHeader) []byte {
+func BlockHeaderHash(b *gurkhaB.BlockHeader) []byte {
 	sum := sha256.Sum256(BlockHeaderBytes(b))
 	return sum[:]
 }
 
-func BlockDataHash(b *cb.BlockData) []byte {
+func BlockDataHash(b *gurkhaB.BlockData) []byte {
 	sum := sha256.Sum256(bytes.Join(b.Data, nil))
 	return sum[:]
 }
@@ -75,11 +76,11 @@ func GetChannelIDFromBlockBytes(bytes []byte) (string, error) {
 		return "", err
 	}
 
-	return GetChannelIDFromBlock(block)
+	return GetChannelIDFromBlock(block) // This here causes error is gurkhaB is used instead of cb, why?
 }
 
 // GetChannelIDFromBlock returns channel ID in the block
-func GetChannelIDFromBlock(block *cb.Block) (string, error) {
+func GetChannelIDFromBlock(block *gurkhaB.Block) (string, error) {
 	if block == nil || block.Data == nil || block.Data.Data == nil || len(block.Data.Data) == 0 {
 		return "", errors.New("failed to retrieve channel id - block is empty")
 	}
@@ -105,7 +106,7 @@ func GetChannelIDFromBlock(block *cb.Block) (string, error) {
 }
 
 // GetMetadataFromBlock retrieves metadata at the specified index.
-func GetMetadataFromBlock(block *cb.Block, index cb.BlockMetadataIndex) (*cb.Metadata, error) {
+func GetMetadataFromBlock(block *gurkhaB.Block, index gurkhaB.BlockMetadataIndex) (*gurkhaB.Metadata, error) {
 	if block.Metadata == nil {
 		return nil, errors.New("no metadata in block")
 	}
@@ -114,7 +115,7 @@ func GetMetadataFromBlock(block *cb.Block, index cb.BlockMetadataIndex) (*cb.Met
 		return nil, errors.Errorf("no metadata at index [%s]", index)
 	}
 
-	md := &cb.Metadata{}
+	md := &gurkhaB.Metadata{}
 	err := proto.Unmarshal(block.Metadata.Metadata[index], md)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error unmarshaling metadata at index [%s]", index)
@@ -124,7 +125,7 @@ func GetMetadataFromBlock(block *cb.Block, index cb.BlockMetadataIndex) (*cb.Met
 
 // GetMetadataFromBlockOrPanic retrieves metadata at the specified index, or
 // panics on error
-func GetMetadataFromBlockOrPanic(block *cb.Block, index cb.BlockMetadataIndex) *cb.Metadata {
+func GetMetadataFromBlockOrPanic(block *gurkhaB.Block, index gurkhaB.BlockMetadataIndex) *gurkhaB.Metadata {
 	md, err := GetMetadataFromBlock(block, index)
 	if err != nil {
 		panic(err)
@@ -135,24 +136,24 @@ func GetMetadataFromBlockOrPanic(block *cb.Block, index cb.BlockMetadataIndex) *
 // GetConsenterMetadataFromBlock attempts to retrieve consenter metadata from the value
 // stored in block metadata at index SIGNATURES (first field). If no consenter metadata
 // is found there, it falls back to index ORDERER (third field).
-func GetConsenterMetadataFromBlock(block *cb.Block) (*cb.Metadata, error) {
-	m, err := GetMetadataFromBlock(block, cb.BlockMetadataIndex_SIGNATURES)
+func GetConsenterMetadataFromBlock(block *gurkhaB.Block) (*gurkhaB.Metadata, error) {
+	m, err := GetMetadataFromBlock(block, gurkhaB.BlockMetadataIndex_SIGNATURES)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to retrieve metadata")
 	}
 
 	// TODO FAB-15864 Remove this fallback when we can stop supporting upgrade from pre-1.4.1 orderer
 	if len(m.Value) == 0 {
-		return GetMetadataFromBlock(block, cb.BlockMetadataIndex_ORDERER)
+		return GetMetadataFromBlock(block, gurkhaB.BlockMetadataIndex_ORDERER)
 	}
 
-	obm := &cb.OrdererBlockMetadata{}
+	obm := &gurkhaB.OrdererBlockMetadata{}
 	err = proto.Unmarshal(m.Value, obm)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal orderer block metadata")
 	}
 
-	res := &cb.Metadata{}
+	res := &gurkhaB.Metadata{}
 	err = proto.Unmarshal(obm.ConsenterMetadata, res)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal consenter metadata")
@@ -163,18 +164,18 @@ func GetConsenterMetadataFromBlock(block *cb.Block) (*cb.Metadata, error) {
 
 // GetLastConfigIndexFromBlock retrieves the index of the last config block as
 // encoded in the block metadata
-func GetLastConfigIndexFromBlock(block *cb.Block) (uint64, error) {
-	m, err := GetMetadataFromBlock(block, cb.BlockMetadataIndex_SIGNATURES)
+func GetLastConfigIndexFromBlock(block *gurkhaB.Block) (uint64, error) {
+	m, err := GetMetadataFromBlock(block, gurkhaB.BlockMetadataIndex_SIGNATURES)
 	if err != nil {
 		return 0, errors.WithMessage(err, "failed to retrieve metadata")
 	}
 	// TODO FAB-15864 Remove this fallback when we can stop supporting upgrade from pre-1.4.1 orderer
 	if len(m.Value) == 0 {
-		m, err := GetMetadataFromBlock(block, cb.BlockMetadataIndex_LAST_CONFIG)
+		m, err := GetMetadataFromBlock(block, gurkhaB.BlockMetadataIndex_LAST_CONFIG)
 		if err != nil {
 			return 0, errors.WithMessage(err, "failed to retrieve metadata")
 		}
-		lc := &cb.LastConfig{}
+		lc := &gurkhaB.LastConfig{}
 		err = proto.Unmarshal(m.Value, lc)
 		if err != nil {
 			return 0, errors.Wrap(err, "error unmarshaling LastConfig")
@@ -182,7 +183,7 @@ func GetLastConfigIndexFromBlock(block *cb.Block) (uint64, error) {
 		return lc.Index, nil
 	}
 
-	obm := &cb.OrdererBlockMetadata{}
+	obm := &gurkhaB.OrdererBlockMetadata{}
 	err = proto.Unmarshal(m.Value, obm)
 	if err != nil {
 		return 0, errors.Wrap(err, "failed to unmarshal orderer block metadata")
@@ -192,7 +193,7 @@ func GetLastConfigIndexFromBlock(block *cb.Block) (uint64, error) {
 
 // GetLastConfigIndexFromBlockOrPanic retrieves the index of the last config
 // block as encoded in the block metadata, or panics on error
-func GetLastConfigIndexFromBlockOrPanic(block *cb.Block) uint64 {
+func GetLastConfigIndexFromBlockOrPanic(block *gurkhaB.Block) uint64 {
 	index, err := GetLastConfigIndexFromBlock(block)
 	if err != nil {
 		panic(err)
@@ -201,7 +202,7 @@ func GetLastConfigIndexFromBlockOrPanic(block *cb.Block) uint64 {
 }
 
 // CopyBlockMetadata copies metadata from one block into another
-func CopyBlockMetadata(src *cb.Block, dst *cb.Block) {
+func CopyBlockMetadata(src *gurkhaB.Block, dst *gurkhaB.Block) {
 	dst.Metadata = src.Metadata
 	// Once copied initialize with rest of the
 	// required metadata positions.
@@ -209,11 +210,11 @@ func CopyBlockMetadata(src *cb.Block, dst *cb.Block) {
 }
 
 // InitBlockMetadata initializes metadata structure
-func InitBlockMetadata(block *cb.Block) {
+func InitBlockMetadata(block *gurkhaB.Block) {
 	if block.Metadata == nil {
-		block.Metadata = &cb.BlockMetadata{Metadata: [][]byte{{}, {}, {}, {}, {}}}
-	} else if len(block.Metadata.Metadata) < int(cb.BlockMetadataIndex_COMMIT_HASH+1) {
-		for i := int(len(block.Metadata.Metadata)); i <= int(cb.BlockMetadataIndex_COMMIT_HASH); i++ {
+		block.Metadata = &gurkhaB.BlockMetadata{Metadata: [][]byte{{}, {}, {}, {}, {}}}
+	} else if len(block.Metadata.Metadata) < int(gurkhaB.BlockMetadataIndex_COMMIT_HASH+1) {
+		for i := int(len(block.Metadata.Metadata)); i <= int(gurkhaB.BlockMetadataIndex_COMMIT_HASH); i++ {
 			block.Metadata.Metadata = append(block.Metadata.Metadata, []byte{})
 		}
 	}

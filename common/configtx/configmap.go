@@ -10,7 +10,8 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	//cb "github.com/hyperledger/fabric-protos-go/common"
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/protoutil"
 	"github.com/pkg/errors"
 )
@@ -29,7 +30,7 @@ const (
 
 // mapConfig is intended to be called outside this file
 // it takes a ConfigGroup and generates a map of fqPath to comparables (or error on invalid keys)
-func mapConfig(channelGroup *cb.ConfigGroup, rootGroupKey string) (map[string]comparable, error) {
+func mapConfig(channelGroup *gurkhaB.ConfigGroup, rootGroupKey string) (map[string]comparable, error) {
 	result := make(map[string]comparable)
 	if channelGroup != nil {
 		err := recurseConfig(result, []string{rootGroupKey}, channelGroup)
@@ -71,7 +72,7 @@ func addToMap(cg comparable, result map[string]comparable) error {
 }
 
 // recurseConfig is used only internally by mapConfig
-func recurseConfig(result map[string]comparable, path []string, group *cb.ConfigGroup) error {
+func recurseConfig(result map[string]comparable, path []string, group *gurkhaB.ConfigGroup) error {
 	if err := addToMap(comparable{key: path[len(path)-1], path: path[:len(path)-1], ConfigGroup: group}, result); err != nil {
 		return err
 	}
@@ -102,14 +103,14 @@ func recurseConfig(result map[string]comparable, path []string, group *cb.Config
 
 // configMapToConfig is intended to be called from outside this file
 // It takes a configMap and converts it back into a *cb.ConfigGroup structure
-func configMapToConfig(configMap map[string]comparable, rootGroupKey string) (*cb.ConfigGroup, error) {
+func configMapToConfig(configMap map[string]comparable, rootGroupKey string) (*gurkhaB.ConfigGroup, error) {
 	rootPath := pathSeparator + rootGroupKey
 	return recurseConfigMap(rootPath, configMap)
 }
 
 // recurseConfigMap is used only internally by configMapToConfig
 // Note, this function no longer mutates the cb.Config* entries within configMap
-func recurseConfigMap(path string, configMap map[string]comparable) (*cb.ConfigGroup, error) {
+func recurseConfigMap(path string, configMap map[string]comparable) (*gurkhaB.ConfigGroup, error) {
 	groupPath := groupPrefix + path
 	group, ok := configMap[groupPath]
 	if !ok {
@@ -140,7 +141,7 @@ func recurseConfigMap(path string, configMap map[string]comparable) (*cb.ConfigG
 		if value.ConfigValue == nil {
 			return nil, errors.Errorf("ConfigValue not found at value path: %s", valuePath)
 		}
-		newConfigGroup.Values[key] = proto.Clone(value.ConfigValue).(*cb.ConfigValue)
+		newConfigGroup.Values[key] = proto.Clone(value.ConfigValue).(*gurkhaB.ConfigValue)
 	}
 
 	for key := range group.Policies {
@@ -152,7 +153,7 @@ func recurseConfigMap(path string, configMap map[string]comparable) (*cb.ConfigG
 		if policy.ConfigPolicy == nil {
 			return nil, errors.Errorf("ConfigPolicy not found at policy path: %s", policyPath)
 		}
-		newConfigGroup.Policies[key] = proto.Clone(policy.ConfigPolicy).(*cb.ConfigPolicy)
+		newConfigGroup.Policies[key] = proto.Clone(policy.ConfigPolicy).(*gurkhaB.ConfigPolicy)
 		logger.Debugf("Setting policy for key %s to %+v", key, group.Policies[key])
 	}
 

@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package policy
 
 import (
+	"github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/cauthdsl"
 	"github.com/hyperledger/fabric/common/policies"

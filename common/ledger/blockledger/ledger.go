@@ -7,7 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package blockledger
 
 import (
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	//cb "github.com/hyperledger/fabric-protos-go/common"
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	ab "github.com/hyperledger/fabric-protos-go/orderer"
 )
 
@@ -28,7 +29,7 @@ type Factory interface {
 type Iterator interface {
 	// Next blocks until there is a new block available, or returns an error if
 	// the next block is no longer retrievable
-	Next() (*cb.Block, cb.Status)
+	Next() (*gurkhaB.Block, gurkhaB.Status)
 	// Close releases resources acquired by the Iterator
 	Close()
 }
@@ -41,13 +42,13 @@ type Reader interface {
 	// Height returns the number of blocks on the ledger
 	Height() uint64
 	// retrieve blockByNumber
-	RetrieveBlockByNumber(blockNumber uint64) (*cb.Block, error)
+	RetrieveBlockByNumber(blockNumber uint64) (*gurkhaB.Block, error)
 }
 
 // Writer allows the caller to modify the ledger
 type Writer interface {
 	// Append a new block to the ledger
-	Append(block *cb.Block) error
+	Append(block *gurkhaB.Block) error
 }
 
 // ReadWriter encapsulates the read/write functions of the ledger

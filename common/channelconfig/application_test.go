@@ -9,8 +9,8 @@ package channelconfig
 import (
 	"testing"
 
+	cb "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
-	cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/common/capabilities"
 	"github.com/hyperledger/fabric/protoutil"
 	. "github.com/onsi/gomega"

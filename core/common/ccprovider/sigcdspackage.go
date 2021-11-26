@@ -22,8 +22,8 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric-protos-go/common"
 	pb "github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/bccsp/factory"

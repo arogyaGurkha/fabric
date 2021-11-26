@@ -7,14 +7,15 @@ SPDX-License-Identifier: Apache-2.0
 package configtx
 
 import (
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
 	cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/protoutil"
 )
 
 // UnmarshalConfig attempts to unmarshal bytes to a *cb.Config
-func UnmarshalConfig(data []byte) (*cb.Config, error) {
-	config := &cb.Config{}
+func UnmarshalConfig(data []byte) (*gurkhaB.Config, error) {
+	config := &gurkhaB.Config{}
 	err := proto.Unmarshal(data, config)
 	if err != nil {
 		return nil, err
@@ -23,7 +24,7 @@ func UnmarshalConfig(data []byte) (*cb.Config, error) {
 }
 
 // UnmarshalConfigOrPanic attempts to unmarshal bytes to a *cb.Config or panics on error
-func UnmarshalConfigOrPanic(data []byte) *cb.Config {
+func UnmarshalConfigOrPanic(data []byte) *gurkhaB.Config {
 	result, err := UnmarshalConfig(data)
 	if err != nil {
 		panic(err)
@@ -32,8 +33,8 @@ func UnmarshalConfigOrPanic(data []byte) *cb.Config {
 }
 
 // UnmarshalConfigUpdate attempts to unmarshal bytes to a *cb.ConfigUpdate
-func UnmarshalConfigUpdate(data []byte) (*cb.ConfigUpdate, error) {
-	configUpdate := &cb.ConfigUpdate{}
+func UnmarshalConfigUpdate(data []byte) (*gurkhaB.ConfigUpdate, error) {
+	configUpdate := &gurkhaB.ConfigUpdate{}
 	err := proto.Unmarshal(data, configUpdate)
 	if err != nil {
 		return nil, err
@@ -42,7 +43,7 @@ func UnmarshalConfigUpdate(data []byte) (*cb.ConfigUpdate, error) {
 }
 
 // UnmarshalConfigUpdateOrPanic attempts to unmarshal bytes to a *cb.ConfigUpdate or panics on error
-func UnmarshalConfigUpdateOrPanic(data []byte) *cb.ConfigUpdate {
+func UnmarshalConfigUpdateOrPanic(data []byte) *gurkhaB.ConfigUpdate {
 	result, err := UnmarshalConfigUpdate(data)
 	if err != nil {
 		panic(err)
@@ -51,8 +52,8 @@ func UnmarshalConfigUpdateOrPanic(data []byte) *cb.ConfigUpdate {
 }
 
 // UnmarshalConfigUpdateEnvelope attempts to unmarshal bytes to a *cb.ConfigUpdate
-func UnmarshalConfigUpdateEnvelope(data []byte) (*cb.ConfigUpdateEnvelope, error) {
-	configUpdateEnvelope := &cb.ConfigUpdateEnvelope{}
+func UnmarshalConfigUpdateEnvelope(data []byte) (*gurkhaB.ConfigUpdateEnvelope, error) {
+	configUpdateEnvelope := &gurkhaB.ConfigUpdateEnvelope{}
 	err := proto.Unmarshal(data, configUpdateEnvelope)
 	if err != nil {
 		return nil, err
@@ -61,7 +62,7 @@ func UnmarshalConfigUpdateEnvelope(data []byte) (*cb.ConfigUpdateEnvelope, error
 }
 
 // UnmarshalConfigUpdateEnvelopeOrPanic attempts to unmarshal bytes to a *cb.ConfigUpdateEnvelope or panics on error
-func UnmarshalConfigUpdateEnvelopeOrPanic(data []byte) *cb.ConfigUpdateEnvelope {
+func UnmarshalConfigUpdateEnvelopeOrPanic(data []byte) *gurkhaB.ConfigUpdateEnvelope {
 	result, err := UnmarshalConfigUpdateEnvelope(data)
 	if err != nil {
 		panic(err)
@@ -70,8 +71,8 @@ func UnmarshalConfigUpdateEnvelopeOrPanic(data []byte) *cb.ConfigUpdateEnvelope 
 }
 
 // UnmarshalConfigEnvelope attempts to unmarshal bytes to a *cb.ConfigEnvelope
-func UnmarshalConfigEnvelope(data []byte) (*cb.ConfigEnvelope, error) {
-	configEnv := &cb.ConfigEnvelope{}
+func UnmarshalConfigEnvelope(data []byte) (*gurkhaB.ConfigEnvelope, error) {
+	configEnv := &gurkhaB.ConfigEnvelope{}
 	err := proto.Unmarshal(data, configEnv)
 	if err != nil {
 		return nil, err
@@ -80,7 +81,7 @@ func UnmarshalConfigEnvelope(data []byte) (*cb.ConfigEnvelope, error) {
 }
 
 // UnmarshalConfigEnvelopeOrPanic attempts to unmarshal bytes to a *cb.ConfigEnvelope or panics on error
-func UnmarshalConfigEnvelopeOrPanic(data []byte) *cb.ConfigEnvelope {
+func UnmarshalConfigEnvelopeOrPanic(data []byte) *gurkhaB.ConfigEnvelope {
 	result, err := UnmarshalConfigEnvelope(data)
 	if err != nil {
 		panic(err)
@@ -89,7 +90,7 @@ func UnmarshalConfigEnvelopeOrPanic(data []byte) *cb.ConfigEnvelope {
 }
 
 // UnmarshalConfigUpdateFromPayload unmarshals configuration update from given payload
-func UnmarshalConfigUpdateFromPayload(payload *cb.Payload) (*cb.ConfigUpdate, error) {
+func UnmarshalConfigUpdateFromPayload(payload *cb.Payload) (*gurkhaB.ConfigUpdate, error) {
 	configEnv, err := UnmarshalConfigEnvelope(payload.Data)
 	if err != nil {
 		return nil, err

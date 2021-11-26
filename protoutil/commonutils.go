@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"time"
 
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/internal/pkg/identity"
 	"github.com/pkg/errors"
 )
@@ -51,7 +51,7 @@ func CreateNonce() ([]byte, error) {
 
 // UnmarshalEnvelopeOfType unmarshals an envelope of the specified type,
 // including unmarshaling the payload data
-func UnmarshalEnvelopeOfType(envelope *cb.Envelope, headerType cb.HeaderType, message proto.Message) (*cb.ChannelHeader, error) {
+func UnmarshalEnvelopeOfType(envelope *gurkhaB.Envelope, headerType gurkhaB.HeaderType, message proto.Message) (*gurkhaB.ChannelHeader, error) {
 	payload, err := UnmarshalPayload(envelope.Payload)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func UnmarshalEnvelopeOfType(envelope *cb.Envelope, headerType cb.HeaderType, me
 	}
 
 	if chdr.Type != int32(headerType) {
-		return nil, errors.Errorf("invalid type %s, expected %s", cb.HeaderType(chdr.Type), headerType)
+		return nil, errors.Errorf("invalid type %s, expected %s", gurkhaB.HeaderType(chdr.Type), headerType)
 	}
 
 	err = proto.Unmarshal(payload.Data, message)
@@ -77,7 +77,7 @@ func UnmarshalEnvelopeOfType(envelope *cb.Envelope, headerType cb.HeaderType, me
 
 // ExtractEnvelopeOrPanic retrieves the requested envelope from a given block
 // and unmarshals it -- it panics if either of these operations fail
-func ExtractEnvelopeOrPanic(block *cb.Block, index int) *cb.Envelope {
+func ExtractEnvelopeOrPanic(block *gurkhaB.Block, index int) *gurkhaB.Envelope {
 	envelope, err := ExtractEnvelope(block, index)
 	if err != nil {
 		panic(err)
@@ -87,7 +87,7 @@ func ExtractEnvelopeOrPanic(block *cb.Block, index int) *cb.Envelope {
 
 // ExtractEnvelope retrieves the requested envelope from a given block and
 // unmarshals it
-func ExtractEnvelope(block *cb.Block, index int) (*cb.Envelope, error) {
+func ExtractEnvelope(block *gurkhaB.Block, index int) (*gurkhaB.Envelope, error) {
 	if block.Data == nil {
 		return nil, errors.New("block data is nil")
 	}
@@ -103,8 +103,8 @@ func ExtractEnvelope(block *cb.Block, index int) (*cb.Envelope, error) {
 }
 
 // MakeChannelHeader creates a ChannelHeader.
-func MakeChannelHeader(headerType cb.HeaderType, version int32, chainID string, epoch uint64) *cb.ChannelHeader {
-	return &cb.ChannelHeader{
+func MakeChannelHeader(headerType gurkhaB.HeaderType, version int32, chainID string, epoch uint64) *gurkhaB.ChannelHeader {
+	return &gurkhaB.ChannelHeader{
 		Type:    int32(headerType),
 		Version: version,
 		Timestamp: &timestamp.Timestamp{
@@ -117,8 +117,8 @@ func MakeChannelHeader(headerType cb.HeaderType, version int32, chainID string, 
 }
 
 // MakeSignatureHeader creates a SignatureHeader.
-func MakeSignatureHeader(serializedCreatorCertChain []byte, nonce []byte) *cb.SignatureHeader {
-	return &cb.SignatureHeader{
+func MakeSignatureHeader(serializedCreatorCertChain []byte, nonce []byte) *gurkhaB.SignatureHeader {
+	return &gurkhaB.SignatureHeader{
 		Creator: serializedCreatorCertChain,
 		Nonce:   nonce,
 	}
@@ -126,7 +126,7 @@ func MakeSignatureHeader(serializedCreatorCertChain []byte, nonce []byte) *cb.Si
 
 // SetTxID generates a transaction id based on the provided signature header
 // and sets the TxId field in the channel header
-func SetTxID(channelHeader *cb.ChannelHeader, signatureHeader *cb.SignatureHeader) {
+func SetTxID(channelHeader *gurkhaB.ChannelHeader, signatureHeader *gurkhaB.SignatureHeader) {
 	channelHeader.TxId = ComputeTxID(
 		signatureHeader.Nonce,
 		signatureHeader.Creator,
@@ -134,15 +134,15 @@ func SetTxID(channelHeader *cb.ChannelHeader, signatureHeader *cb.SignatureHeade
 }
 
 // MakePayloadHeader creates a Payload Header.
-func MakePayloadHeader(ch *cb.ChannelHeader, sh *cb.SignatureHeader) *cb.Header {
-	return &cb.Header{
+func MakePayloadHeader(ch *gurkhaB.ChannelHeader, sh *gurkhaB.SignatureHeader) *gurkhaB.Header {
+	return &gurkhaB.Header{
 		ChannelHeader:   MarshalOrPanic(ch),
 		SignatureHeader: MarshalOrPanic(sh),
 	}
 }
 
 // NewSignatureHeader returns a SignatureHeader with a valid nonce.
-func NewSignatureHeader(id identity.Serializer) (*cb.SignatureHeader, error) {
+func NewSignatureHeader(id identity.Serializer) (*gurkhaB.SignatureHeader, error) {
 	creator, err := id.Serialize()
 	if err != nil {
 		return nil, err
@@ -152,14 +152,14 @@ func NewSignatureHeader(id identity.Serializer) (*cb.SignatureHeader, error) {
 		return nil, err
 	}
 
-	return &cb.SignatureHeader{
+	return &gurkhaB.SignatureHeader{
 		Creator: creator,
 		Nonce:   nonce,
 	}, nil
 }
 
 // NewSignatureHeaderOrPanic returns a signature header and panics on error.
-func NewSignatureHeaderOrPanic(id identity.Serializer) *cb.SignatureHeader {
+func NewSignatureHeaderOrPanic(id identity.Serializer) *gurkhaB.SignatureHeader {
 	if id == nil {
 		panic(errors.New("invalid signer. cannot be nil"))
 	}
@@ -187,7 +187,7 @@ func SignOrPanic(signer identity.Signer, msg []byte) []byte {
 
 // IsConfigBlock validates whenever given block contains configuration
 // update transaction
-func IsConfigBlock(block *cb.Block) bool {
+func IsConfigBlock(block *gurkhaB.Block) bool {
 	envelope, err := ExtractEnvelope(block, 0)
 	if err != nil {
 		return false
@@ -207,11 +207,11 @@ func IsConfigBlock(block *cb.Block) bool {
 		return false
 	}
 
-	return cb.HeaderType(hdr.Type) == cb.HeaderType_CONFIG || cb.HeaderType(hdr.Type) == cb.HeaderType_ORDERER_TRANSACTION
+	return gurkhaB.HeaderType(hdr.Type) == gurkhaB.HeaderType_CONFIG || gurkhaB.HeaderType(hdr.Type) == gurkhaB.HeaderType_ORDERER_TRANSACTION
 }
 
 // ChannelHeader returns the *cb.ChannelHeader for a given *cb.Envelope.
-func ChannelHeader(env *cb.Envelope) (*cb.ChannelHeader, error) {
+func ChannelHeader(env *gurkhaB.Envelope) (*gurkhaB.ChannelHeader, error) {
 	if env == nil {
 		return nil, errors.New("Invalid envelope payload. can't be nil")
 	}
@@ -238,7 +238,7 @@ func ChannelHeader(env *cb.Envelope) (*cb.ChannelHeader, error) {
 }
 
 // ChannelID returns the Channel ID for a given *cb.Envelope.
-func ChannelID(env *cb.Envelope) (string, error) {
+func ChannelID(env *gurkhaB.Envelope) (string, error) {
 	chdr, err := ChannelHeader(env)
 	if err != nil {
 		return "", errors.WithMessage(err, "error retrieving channel header")
@@ -249,9 +249,9 @@ func ChannelID(env *cb.Envelope) (string, error) {
 
 // EnvelopeToConfigUpdate is used to extract a ConfigUpdateEnvelope from an envelope of
 // type CONFIG_UPDATE
-func EnvelopeToConfigUpdate(configtx *cb.Envelope) (*cb.ConfigUpdateEnvelope, error) {
-	configUpdateEnv := &cb.ConfigUpdateEnvelope{}
-	_, err := UnmarshalEnvelopeOfType(configtx, cb.HeaderType_CONFIG_UPDATE, configUpdateEnv)
+func EnvelopeToConfigUpdate(configtx *gurkhaB.Envelope) (*gurkhaB.ConfigUpdateEnvelope, error) {
+	configUpdateEnv := &gurkhaB.ConfigUpdateEnvelope{}
+	_, err := UnmarshalEnvelopeOfType(configtx, gurkhaB.HeaderType_CONFIG_UPDATE, configUpdateEnv)
 	if err != nil {
 		return nil, err
 	}

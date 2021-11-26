@@ -8,8 +8,8 @@ package protoutil
 
 import (
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric-protos-go/common"
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	//cb "github.com/hyperledger/fabric-protos-go/common"
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/msp"
 	"github.com/hyperledger/fabric-protos-go/peer"
 	pb "github.com/hyperledger/fabric-protos-go/peer"
@@ -20,8 +20,8 @@ import (
 // will return a non-nil pointer whenever the error is nil
 
 // UnmarshalBlock unmarshals bytes to a Block
-func UnmarshalBlock(encoded []byte) (*cb.Block, error) {
-	block := &cb.Block{}
+func UnmarshalBlock(encoded []byte) (*gurkhaB.Block, error) {
+	block := &gurkhaB.Block{}
 	err := proto.Unmarshal(encoded, block)
 	return block, errors.Wrap(err, "error unmarshaling Block")
 }
@@ -41,22 +41,22 @@ func UnmarshalChaincodeInvocationSpec(encoded []byte) (*peer.ChaincodeInvocation
 }
 
 // UnmarshalPayload unmarshals bytes to a Payload
-func UnmarshalPayload(encoded []byte) (*cb.Payload, error) {
-	payload := &cb.Payload{}
+func UnmarshalPayload(encoded []byte) (*gurkhaB.Payload, error) {
+	payload := &gurkhaB.Payload{}
 	err := proto.Unmarshal(encoded, payload)
 	return payload, errors.Wrap(err, "error unmarshaling Payload")
 }
 
 // UnmarshalEnvelope unmarshals bytes to a Envelope
-func UnmarshalEnvelope(encoded []byte) (*cb.Envelope, error) {
-	envelope := &cb.Envelope{}
+func UnmarshalEnvelope(encoded []byte) (*gurkhaB.Envelope, error) {
+	envelope := &gurkhaB.Envelope{}
 	err := proto.Unmarshal(encoded, envelope)
 	return envelope, errors.Wrap(err, "error unmarshaling Envelope")
 }
 
 // UnmarshalChannelHeader unmarshals bytes to a ChannelHeader
-func UnmarshalChannelHeader(bytes []byte) (*cb.ChannelHeader, error) {
-	chdr := &cb.ChannelHeader{}
+func UnmarshalChannelHeader(bytes []byte) (*gurkhaB.ChannelHeader, error) {
+	chdr := &gurkhaB.ChannelHeader{}
 	err := proto.Unmarshal(bytes, chdr)
 	return chdr, errors.Wrap(err, "error unmarshaling ChannelHeader")
 }
@@ -69,8 +69,8 @@ func UnmarshalChaincodeID(bytes []byte) (*peer.ChaincodeID, error) {
 }
 
 // UnmarshalSignatureHeader unmarshals bytes to a SignatureHeader
-func UnmarshalSignatureHeader(bytes []byte) (*cb.SignatureHeader, error) {
-	sh := &common.SignatureHeader{}
+func UnmarshalSignatureHeader(bytes []byte) (*gurkhaB.SignatureHeader, error) {
+	sh := &gurkhaB.SignatureHeader{}
 	err := proto.Unmarshal(bytes, sh)
 	return sh, errors.Wrap(err, "error unmarshaling SignatureHeader")
 }
@@ -82,8 +82,8 @@ func UnmarshalSerializedIdentity(bytes []byte) (*msp.SerializedIdentity, error) 
 }
 
 // UnmarshalHeader unmarshals bytes to a Header
-func UnmarshalHeader(bytes []byte) (*common.Header, error) {
-	hdr := &common.Header{}
+func UnmarshalHeader(bytes []byte) (*gurkhaB.Header, error) {
+	hdr := &gurkhaB.Header{}
 	err := proto.Unmarshal(bytes, hdr)
 	return hdr, errors.Wrap(err, "error unmarshaling Header")
 }
@@ -160,7 +160,7 @@ func UnmarshalChaincodeProposalPayload(bytes []byte) (*peer.ChaincodeProposalPay
 
 // UnmarshalPayloadOrPanic unmarshals bytes to a Payload structure or panics
 // on error
-func UnmarshalPayloadOrPanic(encoded []byte) *cb.Payload {
+func UnmarshalPayloadOrPanic(encoded []byte) *gurkhaB.Payload {
 	payload, err := UnmarshalPayload(encoded)
 	if err != nil {
 		panic(err)
@@ -170,7 +170,7 @@ func UnmarshalPayloadOrPanic(encoded []byte) *cb.Payload {
 
 // UnmarshalEnvelopeOrPanic unmarshals bytes to an Envelope structure or panics
 // on error
-func UnmarshalEnvelopeOrPanic(encoded []byte) *cb.Envelope {
+func UnmarshalEnvelopeOrPanic(encoded []byte) *gurkhaB.Envelope {
 	envelope, err := UnmarshalEnvelope(encoded)
 	if err != nil {
 		panic(err)
@@ -180,7 +180,7 @@ func UnmarshalEnvelopeOrPanic(encoded []byte) *cb.Envelope {
 
 // UnmarshalBlockOrPanic unmarshals bytes to an Block or panics
 // on error
-func UnmarshalBlockOrPanic(encoded []byte) *cb.Block {
+func UnmarshalBlockOrPanic(encoded []byte) *gurkhaB.Block {
 	block, err := UnmarshalBlock(encoded)
 	if err != nil {
 		panic(err)
@@ -190,7 +190,7 @@ func UnmarshalBlockOrPanic(encoded []byte) *cb.Block {
 
 // UnmarshalChannelHeaderOrPanic unmarshals bytes to a ChannelHeader or panics
 // on error
-func UnmarshalChannelHeaderOrPanic(bytes []byte) *cb.ChannelHeader {
+func UnmarshalChannelHeaderOrPanic(bytes []byte) *gurkhaB.ChannelHeader {
 	chdr, err := UnmarshalChannelHeader(bytes)
 	if err != nil {
 		panic(err)
@@ -200,7 +200,7 @@ func UnmarshalChannelHeaderOrPanic(bytes []byte) *cb.ChannelHeader {
 
 // UnmarshalSignatureHeaderOrPanic unmarshals bytes to a SignatureHeader or panics
 // on error
-func UnmarshalSignatureHeaderOrPanic(bytes []byte) *cb.SignatureHeader {
+func UnmarshalSignatureHeaderOrPanic(bytes []byte) *gurkhaB.SignatureHeader {
 	sighdr, err := UnmarshalSignatureHeader(bytes)
 	if err != nil {
 		panic(err)

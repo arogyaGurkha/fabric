@@ -9,13 +9,13 @@ package configtx
 import (
 	"bytes"
 
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 )
 
 type comparable struct {
-	*cb.ConfigGroup
-	*cb.ConfigValue
-	*cb.ConfigPolicy
+	*gurkhaB.ConfigGroup
+	*gurkhaB.ConfigValue
+	*gurkhaB.ConfigPolicy
 	key  string
 	path []string
 }
@@ -71,13 +71,13 @@ func (cg comparable) modPolicy() string {
 	return ""
 }
 
-func equalConfigValues(lhs, rhs *cb.ConfigValue) bool {
+func equalConfigValues(lhs, rhs *gurkhaB.ConfigValue) bool {
 	return lhs.Version == rhs.Version &&
 		lhs.ModPolicy == rhs.ModPolicy &&
 		bytes.Equal(lhs.Value, rhs.Value)
 }
 
-func equalConfigPolicies(lhs, rhs *cb.ConfigPolicy) bool {
+func equalConfigPolicies(lhs, rhs *gurkhaB.ConfigPolicy) bool {
 	if lhs.Version != rhs.Version ||
 		lhs.ModPolicy != rhs.ModPolicy {
 		return false
@@ -94,7 +94,7 @@ func equalConfigPolicies(lhs, rhs *cb.ConfigPolicy) bool {
 // The subset functions check if inner is a subset of outer
 // TODO, try to consolidate these three methods into one, as the code
 // contents are the same, but the function signatures need to be different
-func subsetOfGroups(inner, outer map[string]*cb.ConfigGroup) bool {
+func subsetOfGroups(inner, outer map[string]*gurkhaB.ConfigGroup) bool {
 	// The empty set is a subset of all sets
 	if len(inner) == 0 {
 		return true
@@ -115,7 +115,7 @@ func subsetOfGroups(inner, outer map[string]*cb.ConfigGroup) bool {
 	return true
 }
 
-func subsetOfPolicies(inner, outer map[string]*cb.ConfigPolicy) bool {
+func subsetOfPolicies(inner, outer map[string]*gurkhaB.ConfigPolicy) bool {
 	// The empty set is a subset of all sets
 	if len(inner) == 0 {
 		return true
@@ -136,7 +136,7 @@ func subsetOfPolicies(inner, outer map[string]*cb.ConfigPolicy) bool {
 	return true
 }
 
-func subsetOfValues(inner, outer map[string]*cb.ConfigValue) bool {
+func subsetOfValues(inner, outer map[string]*gurkhaB.ConfigValue) bool {
 	// The empty set is a subset of all sets
 	if len(inner) == 0 {
 		return true
@@ -157,7 +157,7 @@ func subsetOfValues(inner, outer map[string]*cb.ConfigValue) bool {
 	return true
 }
 
-func equalConfigGroup(lhs, rhs *cb.ConfigGroup) bool {
+func equalConfigGroup(lhs, rhs *gurkhaB.ConfigGroup) bool {
 	if lhs.Version != rhs.Version ||
 		lhs.ModPolicy != rhs.ModPolicy {
 		return false

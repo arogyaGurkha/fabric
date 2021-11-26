@@ -9,9 +9,9 @@ package protoutil
 import (
 	"bytes"
 	"crypto/sha256"
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/pkg/errors"
 )
@@ -45,10 +45,10 @@ func GetPayloads(txActions *peer.TransactionAction) (*peer.ChaincodeActionPayloa
 }
 
 // GetEnvelopeFromBlock gets an envelope from a block's Data field.
-func GetEnvelopeFromBlock(data []byte) (*common.Envelope, error) {
+func GetEnvelopeFromBlock(data []byte) (*gurkhaB.Envelope, error) {
 	// Block always begins with an envelope
 	var err error
-	env := &common.Envelope{}
+	env := &gurkhaB.Envelope{}
 	if err = proto.Unmarshal(data, env); err != nil {
 		return nil, errors.Wrap(err, "error unmarshaling Envelope")
 	}
@@ -59,13 +59,13 @@ func GetEnvelopeFromBlock(data []byte) (*common.Envelope, error) {
 // CreateSignedEnvelope creates a signed envelope of the desired type, with
 // marshaled dataMsg and signs it
 func CreateSignedEnvelope(
-	txType common.HeaderType,
+	txType gurkhaB.HeaderType,
 	channelID string,
 	signer Signer,
 	dataMsg proto.Message,
 	msgVersion int32,
 	epoch uint64,
-) (*common.Envelope, error) {
+) (*gurkhaB.Envelope, error) {
 	return CreateSignedEnvelopeWithTLSBinding(txType, channelID, signer, dataMsg, msgVersion, epoch, nil)
 }
 
@@ -73,18 +73,18 @@ func CreateSignedEnvelope(
 // type, with marshaled dataMsg and signs it. It also includes a TLS cert hash
 // into the channel header
 func CreateSignedEnvelopeWithTLSBinding(
-	txType common.HeaderType,
+	txType gurkhaB.HeaderType,
 	channelID string,
 	signer Signer,
 	dataMsg proto.Message,
 	msgVersion int32,
 	epoch uint64,
 	tlsCertHash []byte,
-) (*common.Envelope, error) {
+) (*gurkhaB.Envelope, error) {
 	payloadChannelHeader := MakeChannelHeader(txType, msgVersion, channelID, epoch)
 	payloadChannelHeader.TlsCertHash = tlsCertHash
 	var err error
-	payloadSignatureHeader := &common.SignatureHeader{}
+	payloadSignatureHeader := &gurkhaB.SignatureHeader{}
 
 	if signer != nil {
 		payloadSignatureHeader, err = NewSignatureHeader(signer)
@@ -99,7 +99,7 @@ func CreateSignedEnvelopeWithTLSBinding(
 	}
 
 	paylBytes := MarshalOrPanic(
-		&common.Payload{
+		&gurkhaB.Payload{
 			Header: MakePayloadHeader(payloadChannelHeader, payloadSignatureHeader),
 			Data:   data,
 		},
@@ -113,7 +113,7 @@ func CreateSignedEnvelopeWithTLSBinding(
 		}
 	}
 
-	env := &common.Envelope{
+	env := &gurkhaB.Envelope{
 		Payload:   paylBytes,
 		Signature: sig,
 	}
@@ -135,7 +135,7 @@ func CreateSignedTx(
 	proposal *peer.Proposal,
 	signer Signer,
 	resps ...*peer.ProposalResponse,
-) (*common.Envelope, error) {
+) (*gurkhaB.Envelope, error) {
 	if len(resps) == 0 {
 		return nil, errors.New("at least one proposal response is required")
 	}
@@ -220,7 +220,7 @@ func CreateSignedTx(
 	}
 
 	// create the payload
-	payl := &common.Payload{Header: hdr, Data: txBytes}
+	payl := &gurkhaB.Payload{Header: hdr, Data: txBytes}
 	paylBytes, err := GetBytesPayload(payl)
 	if err != nil {
 		return nil, err
@@ -233,7 +233,7 @@ func CreateSignedTx(
 	}
 
 	// here's the envelope
-	return &common.Envelope{Payload: paylBytes, Signature: sig}, nil
+	return &gurkhaB.Envelope{Payload: paylBytes, Signature: sig}, nil
 }
 
 // CreateProposalResponse creates a proposal response.
@@ -361,7 +361,7 @@ func MockSignedEndorserProposalOrPanic(
 	signature []byte,
 ) (*peer.SignedProposal, *peer.Proposal) {
 	prop, _, err := CreateChaincodeProposal(
-		common.HeaderType_ENDORSER_TRANSACTION,
+		gurkhaB.HeaderType_ENDORSER_TRANSACTION,
 		channelID,
 		&peer.ChaincodeInvocationSpec{ChaincodeSpec: cs},
 		creator)
@@ -388,7 +388,7 @@ func MockSignedEndorserProposal2OrPanic(
 	}
 
 	prop, _, err := CreateChaincodeProposal(
-		common.HeaderType_ENDORSER_TRANSACTION,
+		gurkhaB.HeaderType_ENDORSER_TRANSACTION,
 		channelID,
 		&peer.ChaincodeInvocationSpec{ChaincodeSpec: &peer.ChaincodeSpec{}},
 		serializedSigner)
@@ -428,7 +428,7 @@ func GetBytesProposalPayloadForTx(
 // is called by the committer where the visibility policy
 // has already been enforced and so we already get what
 // we have to get in ccPropPayl
-func GetProposalHash2(header *common.Header, ccPropPayl []byte) ([]byte, error) {
+func GetProposalHash2(header *gurkhaB.Header, ccPropPayl []byte) ([]byte, error) {
 	// check for nil argument
 	if header == nil ||
 		header.ChannelHeader == nil ||
@@ -449,7 +449,7 @@ func GetProposalHash2(header *common.Header, ccPropPayl []byte) ([]byte, error) 
 
 // GetProposalHash1 gets the proposal hash bytes after sanitizing the
 // chaincode proposal payload according to the rules of visibility
-func GetProposalHash1(header *common.Header, ccPropPayl []byte) ([]byte, error) {
+func GetProposalHash1(header *gurkhaB.Header, ccPropPayl []byte) ([]byte, error) {
 	// check for nil argument
 	if header == nil ||
 		header.ChannelHeader == nil ||

@@ -8,7 +8,8 @@ package blockledger
 
 import (
 	"github.com/golang/protobuf/proto"
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	//cb "github.com/hyperledger/fabric-protos-go/common"
+	gurkhaB "github.com/arogyaGurkha/fabric-protos-go/common"
 	ab "github.com/hyperledger/fabric-protos-go/orderer"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/protoutil"
@@ -28,8 +29,8 @@ func init() {
 type NotFoundErrorIterator struct{}
 
 // Next returns nil, cb.Status_NOT_FOUND
-func (nfei *NotFoundErrorIterator) Next() (*cb.Block, cb.Status) {
-	return nil, cb.Status_NOT_FOUND
+func (nfei *NotFoundErrorIterator) Next() (*gurkhaB.Block, gurkhaB.Status) {
+	return nil, gurkhaB.Status_NOT_FOUND
 }
 
 // ReadyChan returns a closed channel
@@ -44,7 +45,7 @@ func (nfei *NotFoundErrorIterator) Close() {}
 // contents and metadata for a given ledger
 // XXX This will need to be modified to accept marshaled envelopes
 //     to accommodate non-deterministic marshaling
-func CreateNextBlock(rl Reader, messages []*cb.Envelope) *cb.Block {
+func CreateNextBlock(rl Reader, messages []*gurkhaB.Envelope) *gurkhaB.Block {
 	var nextBlockNumber uint64
 	var previousBlockHash []byte
 	var err error
@@ -56,14 +57,14 @@ func CreateNextBlock(rl Reader, messages []*cb.Envelope) *cb.Block {
 			},
 		})
 		block, status := it.Next()
-		if status != cb.Status_SUCCESS {
+		if status != gurkhaB.Status_SUCCESS {
 			panic("Error seeking to newest block for chain with non-zero height")
 		}
 		nextBlockNumber = block.Header.Number + 1
 		previousBlockHash = protoutil.BlockHeaderHash(block.Header)
 	}
 
-	data := &cb.BlockData{
+	data := &gurkhaB.BlockData{
 		Data: make([][]byte, len(messages)),
 	}
 
@@ -82,7 +83,7 @@ func CreateNextBlock(rl Reader, messages []*cb.Envelope) *cb.Block {
 }
 
 // GetBlock is a utility method for retrieving a single block
-func GetBlock(rl Reader, index uint64) *cb.Block {
+func GetBlock(rl Reader, index uint64) *gurkhaB.Block {
 	iterator, _ := rl.Iterator(&ab.SeekPosition{
 		Type: &ab.SeekPosition_Specified{
 			Specified: &ab.SeekSpecified{Number: index},
@@ -93,13 +94,13 @@ func GetBlock(rl Reader, index uint64) *cb.Block {
 	}
 	defer iterator.Close()
 	block, status := iterator.Next()
-	if status != cb.Status_SUCCESS {
+	if status != gurkhaB.Status_SUCCESS {
 		return nil
 	}
 	return block
 }
 
-func GetBlockByNumber(rl Reader, blockNum uint64) (*cb.Block, error) {
+func GetBlockByNumber(rl Reader, blockNum uint64) (*gurkhaB.Block, error) {
 	logger.Debugw("Retrieving block", "blockNum", blockNum)
 	return rl.RetrieveBlockByNumber(blockNum)
 }
